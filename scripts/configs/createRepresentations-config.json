@@ -1,0 +1,96 @@
+{
+    "bsct": {
+        "originalTokens": [
+            {
+                "address": "0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b",
+                "name": "Synthetic USD Coin",
+                "symbol": "sUSDC",
+                "decimals": 6,
+                "chainID": 4
+            }
+        ]
+    },
+    "fuji": {
+        "originalTokens": [
+            {
+                "address": "0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b",
+                "name": "Synthetic USD Coin",
+                "symbol": "sUSDC",
+                "decimals": 6,
+                "chainID": 4
+            },
+            {
+                "address": "0x9a01bf917477dd9f5d715d188618fc8b7350cd22",
+                "name": "Synthetic Binance USD",
+                "symbol": "sBUSD",
+                "decimals": 18,
+                "chainID": 97
+            },
+            {
+                "address": "0x9a01bf917477dd9f5d715d188618fc8b7350cd22",
+                "name": "USDT (Mumbai)",
+                "symbol": "sUSDT",
+                "decimals": 6,
+                "chainID": 80001
+            }
+        ]
+    },
+    "heco": {
+        "originalTokens": [
+            {
+                "address": "0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b",
+                "name": "Synthetic USD Coin",
+                "symbol": "sUSDC",
+                "decimals": 6,
+                "chainID": 4
+            }
+        ]
+    },
+    "mumbai": {
+        "originalTokens": [
+            {
+                "address": "0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b",
+                "name": "Synthetic USD Coin",
+                "symbol": "sUSDC",
+                "decimals": 6,
+                "chainID": 4
+            },
+            {
+                "address": "0x9a01bf917477dd9f5d715d188618fc8b7350cd22",
+                "name": "Synthetic Binance USD",
+                "symbol": "sBUSD",
+                "decimals": 18,
+                "chainID": 97
+            }
+        ]
+    },
+    "okex": {
+        "originalTokens": [
+            {
+                "address": "0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b",
+                "name": "Synthetic USD Coin",
+                "symbol": "sUSDC",
+                "decimals": 6,
+                "chainID": 4
+            },
+            {
+                "address": "0x9a01bf917477dd9f5d715d188618fc8b7350cd22",
+                "name": "Synthetic Binance USD",
+                "symbol": "sBUSD",
+                "decimals": 18,
+                "chainID": 97
+            }
+        ]
+    },
+    "fork": {
+        "originalTokens": [
+            {
+                "address": "0x36C02dA8a0983159322a80FFE9F24b1acfF8B570",
+                "name": "Synthetic USD Coin",
+                "symbol": "sUSDC",
+                "decimals": 6,
+                "chainID": 31337
+            }
+        ]
+    }
+}

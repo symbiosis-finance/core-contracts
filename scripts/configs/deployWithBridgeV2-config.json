@@ -1,0 +1,42 @@
+{
+    "bsct": {
+        "wrapper": "0xae13d989dac2f0debff460ac112a837c89baa7cd",
+        "mpc": "0xDe0993EEF347d72C7Bd1f26fC43B66e52A8d5C3f",
+        "portalWhitelistToken": "0x9a01bf917477dd9f5d715d188618fc8b7350cd22"
+    },
+    "fuji": {
+        "wrapper": "0xd00ae08403B9bbb9124bB305C09058E32C39A48c",
+        "mpc": "0xDe0993EEF347d72C7Bd1f26fC43B66e52A8d5C3f",
+        "portalWhitelistToken": "0x9a01bf917477dd9f5d715d188618fc8b7350cd22"
+    },
+    "heco": {
+        "wrapper": "0x7aF326B6351C8A9b8fb8CD205CBe11d4Ac5FA836",
+        "mpc": "0xDe0993EEF347d72C7Bd1f26fC43B66e52A8d5C3f",
+        "portalWhitelistToken": "0x41b5984f45AfB2560a0ED72bB69A98E8b32B3cCA"
+    },
+    "mumbai": {
+        "wrapper": "0x9c3c9283d3e44854697cd22d3faa240cfb032889",
+        "mpc": "0xDe0993EEF347d72C7Bd1f26fC43B66e52A8d5C3f",
+        "portalWhitelistToken": "0x9a01bf917477dd9f5d715d188618fc8b7350cd22"
+    },
+    "okex": {
+        "wrapper": "0x70c1c53E991F31981d592C2d865383AC0d212225",
+        "mpc": "0xDe0993EEF347d72C7Bd1f26fC43B66e52A8d5C3f",
+        "portalWhitelistToken": "0x9a01bf917477dD9F5D715D188618fc8B7350cd22"
+    },
+    "rinkeby": {
+        "wrapper": "0xc778417e063141139fce010982780140aa0cd5ab",
+        "mpc": "0xDe0993EEF347d72C7Bd1f26fC43B66e52A8d5C3f",
+        "portalWhitelistToken": "0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b"
+    },
+    "hardhat": {
+        "wrapper": "0xc778417e063141139fce010982780140aa0cd5ab",
+        "mpc": "0xDe0993EEF347d72C7Bd1f26fC43B66e52A8d5C3f",
+        "portalWhitelistToken": "0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b"
+    },
+    "fork": {
+        "wrapper": "0x809d550fca64d94Bd9F66E60752A544199cfAC3D",
+        "mpc": "0xDe0993EEF347d72C7Bd1f26fC43B66e52A8d5C3f",
+        "portalWhitelistToken": "0x36C02dA8a0983159322a80FFE9F24b1acfF8B570"
+    }
+}

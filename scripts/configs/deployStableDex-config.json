@@ -1,0 +1,10 @@
+{
+  "lpTokenName": "Symbiosis STBL pool",
+  "lpTokenSymbol": "SymbPool",
+  "a": 800,
+  "fee": 10000000,
+  "adminFee": 2000000000,
+  "depositFee": 0,
+  "withdrawFee": 0,
+  "devaddr": "deployer"
+}

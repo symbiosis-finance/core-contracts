@@ -1,0 +1,26 @@
+{
+  "bsct": {
+    "synthesisAddress": "",
+    "portalAddress": ""
+  },
+  "fuji": {
+    "synthesisAddress": "",
+    "portalAddress": ""
+  },
+  "heco": {
+    "synthesisAddress": "",
+    "portalAddress": ""
+  },
+  "mumbai": {
+    "synthesisAddress": "",
+    "portalAddress": ""
+  },
+  "okex": {
+    "synthesisAddress": "",
+    "portalAddress": ""
+  },
+  "rinkeby": {
+    "synthesisAddress": "",
+    "portalAddress": ""
+  }
+}

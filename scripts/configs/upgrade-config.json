@@ -1,0 +1,38 @@
+{
+  "bsct": {
+    "synthesisAddress": "1",
+    "portalAddress": "1",
+    "fabricAddress": "1",
+    "bridgeAddress": "1"
+  },
+  "fuji": {
+    "synthesisAddress": "",
+    "portalAddress": "",
+    "fabricAddress": "",
+    "bridgeAddress": ""
+  },
+  "heco": {
+    "synthesisAddress": "",
+    "portalAddress": "",
+    "fabricAddress": "",
+    "bridgeAddress": ""
+  },
+  "mumbai": {
+    "synthesisAddress": "",
+    "portalAddress": "",
+    "fabricAddress": "",
+    "bridgeAddress": ""
+  },
+  "okex": {
+    "synthesisAddress": "",
+    "portalAddress": "",
+    "fabricAddress": "",
+    "bridgeAddress": ""
+  },
+  "rinkeby": {
+    "synthesisAddress": "",
+    "portalAddress": "",
+    "fabricAddress": "",
+    "bridgeAddress": ""
+  }
+}

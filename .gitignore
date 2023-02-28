@@ -1,0 +1,17 @@
+node_modules
+
+# Hardhat files
+cache
+.env
+set-env.sh
+.idea
+.openzeppelin/unknown-31337.json
+.openzeppelin/unknown-31337.json
+artifacts
+
+# Config files
+set-env.sh
+.DS_Store
+set-env-prod.sh
+
+/artifacts/

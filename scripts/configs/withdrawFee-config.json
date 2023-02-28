@@ -1,0 +1,120 @@
+{
+  "eth": {
+    "bridge": "0xd5F0f8dB993D26F5df89E70a83d32b369DcCdaa0",
+    "dexRouter": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
+    "wrapper": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+    "feeRecipient": "0x3229bEfFbbB1aF41369d5fdd8436E9D535055363",
+    "slippage": 50,
+    "BP": 10000,
+    "realToken": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+    "realTokenName": "USDC"
+  },
+  "bsc": {
+    "bridge": "0xd5F0f8dB993D26F5df89E70a83d32b369DcCdaa0",
+    "dexRouter": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+    "wrapper": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    "feeRecipient": "0x3229bEfFbbB1aF41369d5fdd8436E9D535055363",
+    "slippage": 50,
+    "BP": 10000,
+    "realToken": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+    "realTokenName": "BUSD",
+    "synths": [
+      {
+        "synthDex": "0xab0738320A21741f12797Ee921461C691673E276",
+        "synthToken": "0x2f28Add68e59733D23D5F57d94c31fb965f835D0",
+        "synthTokenName": "sUSDC from Ethereum"
+      }
+    ]
+  },
+  "avalanche": {
+    "bridge": "0xd5F0f8dB993D26F5df89E70a83d32b369DcCdaa0",
+    "dexRouter": "0xE54Ca86531e17Ef3616d22Ca28b0D458b6C89106",
+    "wrapper": "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+    "feeRecipient": "0x3229bEfFbbB1aF41369d5fdd8436E9D535055363",
+    "slippage": 50,
+    "BP": 10000,
+    "realToken": "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664",
+    "realTokenName": "USDC.e",
+    "synths": [
+      {
+        "synthDex": "0xab0738320A21741f12797Ee921461C691673E276",
+        "synthToken": "0x2f28Add68e59733D23D5F57d94c31fb965f835D0",
+        "synthTokenName": "sUSDC from Ethereum"
+      },
+      {
+        "synthDex": "0xF4BFF06E02cdF55918e0ec98082bDE1DA85d33Db",
+        "synthToken": "0xf04d3A8Eb17B832Fbebf43610e94BdC4fD5Cf2dd",
+        "synthTokenName": "sBUSD from BSC"
+      }
+    ]
+  },
+  "polygon": {
+    "bridge": "0xd5F0f8dB993D26F5df89E70a83d32b369DcCdaa0",
+    "dexRouter": "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff",
+    "wrapper": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+    "feeRecipient": "0x3229bEfFbbB1aF41369d5fdd8436E9D535055363",
+    "slippage": 50,
+    "BP": 10000,
+    "realToken": "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+    "realTokenName": "USDC",
+    "synths": [
+      {
+        "synthDex": "0xab0738320A21741f12797Ee921461C691673E276",
+        "synthToken": "0x2f28Add68e59733D23D5F57d94c31fb965f835D0",
+        "synthTokenName": "sUSDC from Ethereum"
+      },
+      {
+        "synthDex": "0xF4BFF06E02cdF55918e0ec98082bDE1DA85d33Db",
+        "synthToken": "0xf04d3A8Eb17B832Fbebf43610e94BdC4fD5Cf2dd",
+        "synthTokenName": "sBUSD from BSC"
+      },
+      {
+        "synthDex": "0x3F1bfa6FA3B6D03202538Bf0cdE92BbE551104ac",
+        "synthToken": "0x8Eb3771A43a8C45AaBE6d61ED709eCe652281DC9",
+        "synthTokenName": "sUSDC.e from Avalanche"
+      }
+    ]
+  },
+  "fuji": {
+    "bridge": "0xc9Fd2AF244FEfb31A62A5A33B9D6261Cec2cb7aA",
+    "dexRouter": "0xE54Ca86531e17Ef3616d22Ca28b0D458b6C89106",
+    "wrapper": "0xd00ae08403b9bbb9124bb305c09058e32c39a48c",
+    "feeRecipient": "0xD791486acB9967E0f96e2BfdAAB43253d757E88a",
+    "slippage": 50,
+    "BP": 10000,
+    "realToken": "0x9a01bf917477dd9f5d715d188618fc8b7350cd22",
+    "realTokenName": "USDT",
+    "synths": [
+      {
+        "synthDex": "0x23f5e7756A46e8744f653da9a476705216eb5FF8",
+        "swapUtils": "0x858518F135bba1Ff6B48a22357f8B3538c63D804",
+        "synthToken": "0x079574244Fe274b57816E1EbD844355b9252A7D1",
+        "synthTokenName": "sUSDC"
+      },
+      {
+        "synthDex": "0x080B2e8E9EE50031D9EbcDEE4Cf920572B038419",
+        "swapUtils": "0xBCe8beFB645e380cE436Aff72987eaF873c92Ff3",
+        "synthToken": "0x6FABc6efA4915c50eE6cAf064d4Ce6cE1c2869b5",
+        "synthTokenName": "sBUSD"
+      }
+    ]
+  },
+  "bsct": {
+    "bridge": "0xBA7c80bb5d316c4eE55F96F47d1a1477fFD1aFb6",
+    "dexRouter": "0xD99D1c33F9fC3444f8101754aBC46c52416550D1",
+    "wrapper": "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd",
+    "feeRecipient": "0xD791486acB9967E0f96e2BfdAAB43253d757E88a",
+    "slippage": 50,
+    "BP": 10000,
+    "realToken": "0x9a01bf917477dd9f5d715d188618fc8b7350cd22",
+    "realTokenName": "BUSD",
+    "synths": [
+      {
+        "synthDex": "0x1c07E3Ef949C197576e4875798211Ef1d9AD4c4A",
+        "swapUtils": "0x7434D3D872E660f9950C886FB41C316bEa61d5E9",
+        "synthToken": "0x4A963b223d4ccF91afD7f218AB262122529B3088",
+        "synthTokenName": "sUSDC"
+      }
+    ]
+  }
+}

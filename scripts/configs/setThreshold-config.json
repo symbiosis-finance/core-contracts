@@ -1,0 +1,23 @@
+{
+  "bsct": {
+    "threshold": 10
+  },
+  "fuji": {
+    "threshold": 10
+  },
+  "heco": {
+    "threshold": 10
+  },
+  "mumbai": {
+    "threshold": 10
+  },
+  "okex": {
+    "threshold": 10
+  },
+  "rinkeby": {
+    "threshold": 10
+  },
+  "fork": {
+    "threshold": 10
+  }
+}
