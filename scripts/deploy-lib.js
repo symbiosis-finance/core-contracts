@@ -1,7 +1,7 @@
 const { ethers, upgrades } = require("hardhat");
 const fs = require("fs");
 const path = require("path");
-const { timeout } = require("../utils/utils");
+const { timeout } = require("./utils/timeout.js");
 const trustedForwarder = ethers.constants.AddressZero;
 
 module.exports = {
