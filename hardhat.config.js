@@ -12,7 +12,7 @@ const SCAN_API_KEY = process.env.SCAN_API_KEY || "";
 module.exports = {
     solidity: {
         compilers: [{
-                version: "0.8.7",
+                version: "0.8.8",
                 settings: {
                     optimizer: {
                         enabled: true,
