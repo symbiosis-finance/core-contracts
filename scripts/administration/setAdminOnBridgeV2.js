@@ -2,11 +2,11 @@ const {ethers} = require("hardhat");
 
 const { timeout } = require("../../utils/utils");
 
-const adminAddress = "0xB955b6c65Ff69bfe07A557aa385055282b8a5eA3"; // TODO: check address before run
+const adminAddress = "0xd99ac0681b904991169a4f398B9043781ADbe0C3"; // TODO: check address before run
 
 async function main() {
     const [deployer] = await ethers.getSigners();
-    console.log("Setting admin om bridge with account:", deployer.address);
+    console.log("Setting admin on bridge with account:", deployer.address);
     const network = hre.network.name;
 
     const currentChain = require(`../deployments/deployWithBridgeV2-${network}.json`);

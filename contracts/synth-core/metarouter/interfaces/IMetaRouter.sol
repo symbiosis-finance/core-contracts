@@ -14,7 +14,8 @@ interface IMetaRouter {
         uint256 _amount,
         address _receiveSide,
         bytes calldata _calldata,
-        uint256 _offset
+        uint256 _offset,
+        address _revertableAddress
     ) external;
 
     function returnSwap(

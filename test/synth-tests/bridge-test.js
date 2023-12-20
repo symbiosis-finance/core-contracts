@@ -42,7 +42,7 @@ describe("Test invoking BridgeV2 via signature", function () {
 		let mintableAmount = constants.WeiPerEther.mul(10);
 		let bytes32Id = ethers.utils.formatBytes32String("some id 1234345235");
 		let iface = new ethers.utils.Interface([
-			"function mintSyntheticToken(uint256,bytes32,address,uint256,uint256,address)",
+			"function mintSyntheticToken(uint256,bytes32,bytes32,address,uint256,uint256,address)",
 		]);
 		let methodPrefix =
 			"0x" + Buffer.from("receiveRequestV2", "utf-8").toString("hex");
@@ -57,6 +57,7 @@ describe("Test invoking BridgeV2 via signature", function () {
 				"mintSyntheticToken",
 				[
 					stableBridgingFee,
+					bytes32Id,
 					bytes32Id,
 					testToken.address,
 					hardhatChainID,
@@ -93,6 +94,7 @@ describe("Test invoking BridgeV2 via signature", function () {
 				[
 					stableBridgingFee,
 					bytes32Id,
+					bytes32Id,
 					testToken.address,
 					hardhatChainID,
 					mintableAmount,
@@ -125,6 +127,7 @@ describe("Test invoking BridgeV2 via signature", function () {
 				[
 					stableBridgingFee,
 					bytes32Id,
+					bytes32Id,
 					testToken.address,
 					hardhatChainID,
 					mintableAmount,
@@ -156,6 +159,7 @@ describe("Test invoking BridgeV2 via signature", function () {
 				"mintSyntheticToken",
 				[
 					stableBridgingFee,
+					bytes32Id,
 					bytes32Id,
 					testToken.address,
 					hardhatChainID,
@@ -193,6 +197,7 @@ describe("Test invoking BridgeV2 via signature", function () {
 				"mintSyntheticToken",
 				[
 					stableBridgingFee,
+					bytes32Id,
 					bytes32Id,
 					testToken.address,
 					hardhatChainID,

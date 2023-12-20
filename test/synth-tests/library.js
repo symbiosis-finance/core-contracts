@@ -1,5 +1,4 @@
 const { ethers, upgrades } = require("hardhat");
-const ERC20Abi = require("../abi/ERC20Mock.json");
 
 async function getContractFactory(name) {
 	return await ethers.getContractFactory(name);
@@ -12,22 +11,28 @@ const abiCoder = ethers.utils.defaultAbiCoder;
 const oracleRequestTopic = ethers.utils.id(
 	"OracleRequest(address,bytes,address,address,uint256)"
 );
+const oracleRequestTopicNonEvm = ethers.utils.id(
+	"OracleRequestNonEvm(string,address,bytes32,bytes,bytes32,bytes32,uint256)"
+);
 module.exports = {
+	burnCompletedTopic: ethers.utils.id("BurnCompleted(bytes32,bytes32,address,uint256,uint256,address)"),
+	synthesizeRequestTopic: ethers.utils.id("SynthesizeRequest(bytes32,address,uint256,address,address,uint256,address)"),
+	synthesizeCompletedTopic: ethers.utils.id("SynthesizeCompleted(bytes32,address,bytes32,uint256,uint256,address)"),
+	burnRequestTopic: ethers.utils.id("BurnRequest(bytes32,address,uint256,address,address,uint256,address)"),
 	deployContracts: async function () {
 		[owner] = await ethers.getSigners();
-		const wethAbi = require('../abi/WETH9.json');
-		const Wrapper = await ethers.getContractFactory(wethAbi.abi, wethAbi.bytecode);
+		// get factories for contracts
+		const Wrapper = await getContractFactory("WETH9");
 		const Portal = await getContractFactory("Portal");
 		const Synthesis = await getContractFactory("Synthesis");
-		const ERC20Abi = require("../abi/ERC20Mock.json");
-		const TestToken = await ethers.getContractFactory(ERC20Abi.abi, ERC20Abi.bytecode);
+		const TestToken = await getContractFactory("GenericERC20");
 		const Fabric = await getContractFactory("SyntFabric");
 		const STestToken = await getContractFactory("SyntERC20");
 		const Bridge = await getContractFactory("BridgeV2");
 		const MetaRouter = await getContractFactory("MetaRouter");
 
 		//deploy tokens
-		let testToken = await TestToken.deploy("First Token", "FIRST", 18);
+		let testToken = await TestToken.deploy("First Token", "FIRST");
 
 		let wrapper = await Wrapper.deploy();
 
@@ -91,6 +96,25 @@ module.exports = {
 		});
 		let oracleRequestArgs = abiCoder.decode(
 			["address", "bytes", "address", "address", "uint256"],
+			oracleRequestSynt[0].data
+		);
+		return oracleRequestArgs;
+	},
+
+	catchOracleRequestNonEvm: async function (receiptSynt) {
+		let oracleRequestSynt = receiptSynt.events.filter((x) => {
+			return x.topics[0] == oracleRequestTopicNonEvm;
+		});
+		let oracleRequestArgs = abiCoder.decode(
+			[
+				"string",
+				"address",
+				"bytes32",
+				"bytes",
+				"bytes32",
+				"bytes32",
+				"uint256",
+			],
 			oracleRequestSynt[0].data
 		);
 		return oracleRequestArgs;

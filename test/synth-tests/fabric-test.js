@@ -18,10 +18,10 @@ describe("Fabric tests", function () {
         [owner] = await ethers.getSigners();
         // get factories for contracts
 
-        const Synthesis = await ethers.getContractFactory("Synthesis");
-        const Fabric = await ethers.getContractFactory("SyntFabric");
-        const MetaRouter = await ethers.getContractFactory("MetaRouter");
-        const Bridge = await ethers.getContractFactory("BridgeV2");
+        const Synthesis = await getContractFactory("Synthesis");
+        const Fabric = await getContractFactory("SyntFabric");
+        const MetaRouter = await getContractFactory("MetaRouter");
+        const Bridge = await getContractFactory("BridgeV2");
 
         metaRouter = await MetaRouter.deploy();
 

@@ -59,6 +59,7 @@ describe("Should check synthesis", function () {
 				synthesis.mintSyntheticToken(
 					stableBridgingFee,
 					bytes32Id,
+					bytes32Id,
 					testToken.address,
 					hardhatChainID,
 					mintableAmount,
@@ -74,13 +75,14 @@ describe("Should check synthesis", function () {
 			await synthesis.pause();
 
 			let iface = new ethers.utils.Interface([
-				"function mintSyntheticToken(uint256,bytes32,address,uint256,uint256,address)",
+				"function mintSyntheticToken(uint256,bytes32,bytes32,address,uint256,uint256,address)",
 			]);
 
 			let mintSyntheticTokenCallData = iface.encodeFunctionData(
 				"mintSyntheticToken",
 				[
 					stableBridgingFee,
+					bytes32Id,
 					bytes32Id,
 					testToken.address,
 					hardhatChainID,
@@ -103,13 +105,14 @@ describe("Should check synthesis", function () {
 				ethers.utils.formatBytes32String("some id 1234345235");
 
 			let iface = new ethers.utils.Interface([
-				"function mintSyntheticToken(uint256,bytes32,address,uint256,uint256,address)",
+				"function mintSyntheticToken(uint256,bytes32,bytes32,address,uint256,uint256,address)",
 			]);
 
 			let mintSyntheticTokenCallData = iface.encodeFunctionData(
 				"mintSyntheticToken",
 				[
 					stableBridgingFee,
+					bytes32Id,
 					bytes32Id,
 					testToken.address,
 					hardhatChainID,
@@ -122,6 +125,7 @@ describe("Should check synthesis", function () {
 				"mintSyntheticToken",
 				[
 					stableBridgingFee,
+					bytes32Id,
 					bytes32Id,
 					testToken.address,
 					hardhatChainID,
@@ -151,13 +155,14 @@ describe("Should check synthesis", function () {
 				ethers.utils.formatBytes32String("some id 1234345235");
 
 			let iface = new ethers.utils.Interface([
-				"function mintSyntheticToken(uint256,bytes32,address,uint256,uint256,address)",
+				"function mintSyntheticToken(uint256,bytes32,bytes32,address,uint256,uint256,address)",
 			]);
 
 			let mintSyntheticTokenCallData = iface.encodeFunctionData(
 				"mintSyntheticToken",
 				[
 					stableBridgingFee,
+					bytes32Id,
 					bytes32Id,
 					testToken.address,
 					hardhatChainID,

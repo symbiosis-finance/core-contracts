@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0
-// uni -> stable -> uni scheme
 
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/utils/Context.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./OnchainGateway.sol";
 import '@openzeppelin/contracts/access/Ownable.sol';
@@ -86,8 +86,8 @@ contract OnchainSwapV3  is Context, Ownable{
     function forceApprove(address _token, address _recipient, uint256 _value) internal {
         IERC20 erc20token = IERC20(_token);
         if (erc20token.allowance(address(this), _recipient) < _value) {
-            erc20token.approve(_recipient, 0);
-            erc20token.approve(_recipient, type(uint256).max);
+            SafeERC20.safeApprove(erc20token, _recipient, 0);
+            SafeERC20.safeApprove(erc20token, _recipient, type(uint256).max);
         }
     }
 }
