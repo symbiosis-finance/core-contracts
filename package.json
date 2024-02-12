@@ -1,5 +1,6 @@
 {
   "devDependencies": {
+    "@nomiclabs/hardhat-waffle": "^2.0.6",
     "@matterlabs/hardhat-zksync-deploy": "^0.6.3",
     "@matterlabs/hardhat-zksync-solc": "^0.3.14",
     "@nomiclabs/hardhat-ethers": "^2.0.5",
@@ -8,21 +9,43 @@
     "@openzeppelin/contracts": "4.4.2",
     "@openzeppelin/contracts-upgradeable": "4.4.2",
     "@openzeppelin/hardhat-upgrades": "^1.16.0",
-    "@uniswap/lib": "4.0.1-alpha",
     "@uniswap/v2-core": "1.0.1",
     "chai": "^4.3.4",
     "dotenv": "^10.0.0",
     "esm": "^3.2.25",
-    "ethereum-waffle": "^3.4.0",
+    "ethereum-waffle": "^2.2.0",
     "ethereumjs-tx": "^2.1.2",
     "ethers": "^5.5.3",
     "hardhat": "^2.8.2",
     "hardhat-gas-reporter": "^1.0.6",
-    "solidity-coverage": "^0.7.17",
-    "web3": "^1.7.1"
+    "solidity-coverage": "^0.8.5",
+    "web3": "^4.0.3"
   },
   "dependencies": {
+    "@openzeppelin/contracts": "^4.9.3",
+    "@openzeppelin/contracts-upgradeable": "^4.9.3",
+    "@uniswap/lib": "4.0.1-alpha",
     "undici": "^5.23.0",
     "xmlhttprequest": "^1.8.0"
-  }
+  },
+  "name": "core-contracts",
+  "description": "__IMPORTANT__",
+  "version": "1.0.0",
+  "main": "hardhat.config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nikicat/core-contracts.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nikicat/core-contracts/issues"
+  },
+  "homepage": "https://github.com/nikicat/core-contracts#readme"
 }

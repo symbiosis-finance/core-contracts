@@ -6,6 +6,7 @@ require("hardhat-gas-reporter");
 require("dotenv").config();
 
 const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY || "";
+const INFURA_API_KEY = process.env.INFURA_API_KEY || "";
 const PRIVATE_KEY = process.env.PRIVATE_KEY || "";
 const SCAN_API_KEY = process.env.SCAN_API_KEY || "";
 
@@ -17,7 +18,7 @@ module.exports = {
     },
     solidity: {
         compilers: [{
-                version: "0.8.7",
+                version: "0.8.8",
                 settings: {
                     optimizer: {
                         enabled: true,
@@ -150,6 +151,10 @@ module.exports = {
 
             accounts: [`${PRIVATE_KEY}`],
         },
+        sepolia: {
+            url: `https://sepolia.infura.io/v3/${INFURA_API_KEY}`,
+            accounts: [`${PRIVATE_KEY}`]
+        },
         bsct: {
             url: `https://data-seed-prebsc-1-s1.binance.org:8545/`,
             accounts: [`${PRIVATE_KEY}`],
@@ -181,6 +186,7 @@ module.exports = {
             'boba_avax': 'NO_KEY_REQUIRED',
             'boba_bnb': 'NO_KEY_REQUIRED',
             'kava': 'NO_KEY_REQUIRED',
+            'sepolia': SCAN_API_KEY,
             'polygon_zk_mainnet': SCAN_API_KEY,
             optimisticEthereum: SCAN_API_KEY,
             avalanche: SCAN_API_KEY,
