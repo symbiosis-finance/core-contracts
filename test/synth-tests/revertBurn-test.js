@@ -73,7 +73,7 @@ describe("Revert burn request", function () {
 			receiptUnsynt = await txUnsynt.wait();
 
 			burnRequestUnsynt = receiptUnsynt.events.filter((x) => {
-				return x.event == "BurnRequest";
+				return x.event === "BurnRequest";
 			});
 
 			burnTxId = burnRequestUnsynt[0].args[0];

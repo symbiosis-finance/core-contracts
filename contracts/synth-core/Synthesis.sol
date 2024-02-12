@@ -65,6 +65,7 @@ contract Synthesis is RelayRecipientUpgradeable {
     event SynthesizeCompleted(
         bytes32 indexed id,
         address indexed to,
+        bytes32 indexed crossChainID,
         uint256 amount,
         uint256 bridgingFee,
         address token
@@ -110,9 +111,9 @@ contract Synthesis is RelayRecipientUpgradeable {
         address _trustedForwarder,
         IMetaRouter _metaRouter
     )
-        public
-        virtual
-        initializer
+    public
+    virtual
+    initializer
     {
         __RelayRecipient_init(_trustedForwarder);
         bridge = _bridge;
@@ -143,6 +144,7 @@ contract Synthesis is RelayRecipientUpgradeable {
     function mintSyntheticToken(
         uint256 _stableBridgingFee,
         bytes32 _externalID,
+        bytes32 _crossChainID,
         address _tokenReal,
         uint256 _chainID,
         uint256 _amount,
@@ -169,7 +171,7 @@ contract Synthesis is RelayRecipientUpgradeable {
             _stableBridgingFee,
             syntReprAddr
         );
-        emit SynthesizeCompleted(_externalID, _to, _amount - _stableBridgingFee, _stableBridgingFee, _tokenReal);
+        emit SynthesizeCompleted(_externalID, _to, _crossChainID, _amount - _stableBridgingFee, _stableBridgingFee, _tokenReal);
     }
 
     /**
@@ -182,12 +184,12 @@ contract Synthesis is RelayRecipientUpgradeable {
     ) external onlyBridge whenNotPaused {
         require(
             synthesizeStates[_metaMintTransaction.externalID] ==
-                SynthesizeState.Default,
+            SynthesizeState.Default,
             "Symb: revertSynthesizedRequest called or tokens have been already synthesized"
         );
 
         synthesizeStates[_metaMintTransaction.externalID] = SynthesizeState
-            .Synthesized;
+        .Synthesized;
 
         address syntReprAddr = ISyntFabric(fabric).getSyntRepresentation(
             _metaMintTransaction.tokenReal,
@@ -210,14 +212,6 @@ contract Synthesis is RelayRecipientUpgradeable {
 
         _metaMintTransaction.amount = _metaMintTransaction.amount - _metaMintTransaction.stableBridgingFee;
 
-        emit SynthesizeCompleted(
-            _metaMintTransaction.externalID,
-            _metaMintTransaction.to,
-            _metaMintTransaction.amount,
-            _metaMintTransaction.stableBridgingFee,
-            _metaMintTransaction.tokenReal
-        );
-
         if (_metaMintTransaction.swapTokens.length == 0) {
             TransferHelper.safeTransfer(
                 syntReprAddr,
@@ -236,6 +230,16 @@ contract Synthesis is RelayRecipientUpgradeable {
 
         // metaRouter swap
         metaRouter.metaMintSwap(_metaMintTransaction);
+
+        // emitting event in the end because crossChainID is patched in metaMintSwap
+        emit SynthesizeCompleted(
+            _metaMintTransaction.externalID,
+            _metaMintTransaction.to,
+            _metaMintTransaction.crossChainID,
+            _metaMintTransaction.amount,
+            _metaMintTransaction.stableBridgingFee,
+            _metaMintTransaction.tokenReal
+        );
     }
 
     /**
@@ -356,11 +360,12 @@ contract Synthesis is RelayRecipientUpgradeable {
             bytes memory out = abi.encodeWithSelector(
                 bytes4(
                     keccak256(
-                        bytes("unsynthesize(uint256,bytes32,address,uint256,address)")
+                        bytes("unsynthesize(uint256,bytes32,bytes32,address,uint256,address)")
                     )
                 ),
                 _stableBridgingFee,
                 externalID,
+                internalID,
                 rtoken,
                 _amount,
                 _chain2address
@@ -417,16 +422,22 @@ contract Synthesis is RelayRecipientUpgradeable {
             internalID = keccak256(
                 abi.encodePacked(this, requestCount, block.chainid)
             );
+
+            if (_metaBurnTransaction.crossChainID == "") {
+                _metaBurnTransaction.crossChainID = internalID;
+            }
+
             bytes32 externalID = keccak256(abi.encodePacked(internalID, _metaBurnTransaction.receiveSide, _metaBurnTransaction.revertableAddress, _metaBurnTransaction.chainID)); // external ID
             bytes memory out = abi.encodeWithSelector(
                 bytes4(
                     keccak256(
                         bytes(
-                            "metaUnsynthesize(uint256,bytes32,address,uint256,address,address,bytes,uint256)"
+                            "metaUnsynthesize(uint256,bytes32,bytes32,address,uint256,address,address,bytes,uint256)"
                         )
                     )
                 ),
                 _metaBurnTransaction.stableBridgingFee,
+                _metaBurnTransaction.crossChainID,
                 externalID,
                 _metaBurnTransaction.chain2address,
                 _metaBurnTransaction.amount,
@@ -545,12 +556,12 @@ contract Synthesis is RelayRecipientUpgradeable {
         );
 
         requests[externalID] = TxState({
-        recipient: _msgSender(),
-        chain2address: txState.chain2address,
-        token: rtoken,
-        stoken: txState.stoken,
-        amount: amount,
-        state: RequestState.Sent
+            recipient: _msgSender(),
+            chain2address: txState.chain2address,
+            token: rtoken,
+            stoken: txState.stoken,
+            amount: amount,
+            state: RequestState.Sent
         });
 
         requestCount++;
@@ -566,14 +577,14 @@ contract Synthesis is RelayRecipientUpgradeable {
     }
 
     function revertMetaBurn(
-        uint256 _stableBridgingFee, 
-        bytes32 _externalID, 
-        address _router, 
+        uint256 _stableBridgingFee,
+        bytes32 _externalID,
+        address _router,
         bytes calldata _swapCalldata,
         address _synthesis,
         address _burnToken,
         bytes calldata _burnCalldata
-        ) external onlyBridge whenNotPaused {
+    ) external onlyBridge whenNotPaused {
         TxState storage txState = requests[_externalID];
         require(
             txState.state == RequestState.Sent,

@@ -1,42 +1,117 @@
 {
-    "bsct": {
-        "wrapper": "0xae13d989dac2f0debff460ac112a837c89baa7cd",
-        "mpc": "0xDe0993EEF347d72C7Bd1f26fC43B66e52A8d5C3f",
-        "portalWhitelistToken": "0x9a01bf917477dd9f5d715d188618fc8b7350cd22"
+    "boba_bnb": {
+        "wrapper": "0xC58aaD327D6D58D979882601ba8DDa0685B505eA",
+        "mpc": "0x28774891e1c690cb292A905f6288958C974f7EFf",
+        "portalWhitelistToken": ""
     },
-    "fuji": {
-        "wrapper": "0xd00ae08403B9bbb9124bB305C09058E32C39A48c",
-        "mpc": "0xDe0993EEF347d72C7Bd1f26fC43B66e52A8d5C3f",
-        "portalWhitelistToken": "0x9a01bf917477dd9f5d715d188618fc8b7350cd22"
+    "boba_avax": {
+        "wrapper": "0x26c319B7B2cF823365414d082698C8ac90cbBA63",
+        "mpc": "0x28774891e1c690cb292A905f6288958C974f7EFf",
+        "portalWhitelistToken": "0x126969743a6d300bab08F303f104f0f7DBAfbe20"
     },
-    "heco": {
-        "wrapper": "0x7aF326B6351C8A9b8fb8CD205CBe11d4Ac5FA836",
-        "mpc": "0xDe0993EEF347d72C7Bd1f26fC43B66e52A8d5C3f",
-        "portalWhitelistToken": "0x41b5984f45AfB2560a0ED72bB69A98E8b32B3cCA"
+    "scroll": {
+        "wrapper": "0x5300000000000000000000000000000000000004",
+        "mpc": "0xB047B51691a9C490388E4552E869348B090A6680",
+        "portalWhitelistToken": "0x5300000000000000000000000000000000000004"
     },
-    "mumbai": {
-        "wrapper": "0x9c3c9283d3e44854697cd22d3faa240cfb032889",
-        "mpc": "0xDe0993EEF347d72C7Bd1f26fC43B66e52A8d5C3f",
-        "portalWhitelistToken": "0x9a01bf917477dd9f5d715d188618fc8b7350cd22"
+    "manta": {
+        "wrapper": "0x0Dc808adcE2099A9F62AA87D9670745AbA741746",
+        "mpc": "0xB047B51691a9C490388E4552E869348B090A6680",
+        "portalWhitelistToken": "0x0Dc808adcE2099A9F62AA87D9670745AbA741746"
     },
-    "okex": {
-        "wrapper": "0x70c1c53E991F31981d592C2d865383AC0d212225",
-        "mpc": "0xDe0993EEF347d72C7Bd1f26fC43B66e52A8d5C3f",
-        "portalWhitelistToken": "0x9a01bf917477dD9F5D715D188618fc8B7350cd22"
+    "metis": {
+        "wrapper": "0x75cb093E4D61d2A2e65D8e0BBb01DE8d89b53481",
+        "mpc": "0xB047B51691a9C490388E4552E869348B090A6680",
+        "portalWhitelistToken": "0x420000000000000000000000000000000000000A"
     },
-    "rinkeby": {
-        "wrapper": "0xc778417e063141139fce010982780140aa0cd5ab",
-        "mpc": "0xDe0993EEF347d72C7Bd1f26fC43B66e52A8d5C3f",
-        "portalWhitelistToken": "0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b"
+    "boba_eth": {
+        "wrapper": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000",
+        "mpc": "0x28774891e1c690cb292A905f6288958C974f7EFf",
+        "portalWhitelistToken": "0x66a2A913e447d6b4BF33EFbec43aAeF87890FBbc"
+    },
+    "eth": {
+        "wrapper": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "mpc": "0x28774891e1c690cb292A905f6288958C974f7EFf",
+        "portalWhitelistToken": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+    },
+    "polygon": {
+        "wrapper": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+        "mpc": "0x28774891e1c690cb292A905f6288958C974f7EFf",
+        "portalWhitelistToken": "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"
+    },
+    "linea": {
+        "wrapper": "0xe5D7C2a44FfDDf6b295A15c148167daaAf5Cf34f",
+        "mpc": "0x28774891e1c690cb292A905f6288958C974f7EFf",
+        "portalWhitelistToken": "0xe5D7C2a44FfDDf6b295A15c148167daaAf5Cf34f"
+    },
+    "mantle": {
+        "wrapper": "0x78c1b0C915c4FAA5FffA6CAbf0219DA63d7f4cb8",
+        "mpc": "0x28774891e1c690cb292A905f6288958C974f7EFf",
+        "portalWhitelistToken": "0x09Bc4E0D864854c6aFB6eB9A9cdF58aC190D0dF9"
+    },
+    "base": {
+        "wrapper": "0x4200000000000000000000000000000000000006",
+        "mpc": "0x28774891e1c690cb292A905f6288958C974f7EFf",
+        "portalWhitelistToken": "0x4200000000000000000000000000000000000006"
+    },
+    "zora": {
+        "wrapper": "0x4200000000000000000000000000000000000006",
+        "mpc": "0x28774891e1c690cb292A905f6288958C974f7EFf",
+        "portalWhitelistToken": "0x4200000000000000000000000000000000000006"
+    },
+    "avalanche": {
+        "wrapper": "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+        "mpc": "0x28774891e1c690cb292A905f6288958C974f7EFf",
+        "portalWhitelistToken": "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664"
+    },
+    "arb": {
+        "wrapper": "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+        "mpc": "0x28774891e1c690cb292A905f6288958C974f7EFf",
+        "portalWhitelistToken": "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8"
+    },
+    "polygon_zk_mainnet": {
+        "wrapper": "0x4F9A0e7FD2Bf6067db6994CF12E4495Df938E6e9",
+        "mpc": "0x28774891e1c690cb292A905f6288958C974f7EFf",
+        "portalWhitelistToken": "0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035"
+    },
+    "arb_nova": {
+        "wrapper": "0x765277EebeCA2e31912C9946eAe1021199B39C61",
+        "mpc": "0x28774891e1c690cb292A905f6288958C974f7EFf",
+        "portalWhitelistToken": "0x750ba8b76187092B0D1E87E28daaf484d1b5273b"
+    },
+    "optimism": {
+        "wrapper": "0x4200000000000000000000000000000000000006",
+        "mpc": "0x28774891e1c690cb292A905f6288958C974f7EFf",
+        "portalWhitelistToken": "0x7F5c764cBc14f9669B88837ca1490cCa17c31607"
+    },
+    "bsc": {
+        "wrapper": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+        "mpc": "0x28774891e1c690cb292A905f6288958C974f7EFf",
+        "portalWhitelistToken": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
+    },
+    "telos": {
+        "wrapper": "0xD102cE6A4dB07D247fcc28F366A623Df0938CA9E",
+        "mpc": "0x28774891e1c690cb292A905f6288958C974f7EFf",
+        "portalWhitelistToken": "0x818ec0a7fe18ff94269904fced6ae3dae6d6dc0b"
+    },
+    "kava": {
+        "wrapper": "0xc86c7C0eFbd6A49B35E8714C5f59D99De09A225b",
+        "mpc": "0x28774891e1c690cb292A905f6288958C974f7EFf",
+        "portalWhitelistToken": "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+    },
+    "zkSync": {
+        "wrapper": "0x5AEa5775959fBC2557Cc8789bC1bf90A239D9a91",
+        "mpc": "0x3A4Ec09C6de78CD7cAddA6bd600aBE32fDfbF907",
+        "portalWhitelistToken": "0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4"
     },
     "hardhat": {
         "wrapper": "0xc778417e063141139fce010982780140aa0cd5ab",
-        "mpc": "0xDe0993EEF347d72C7Bd1f26fC43B66e52A8d5C3f",
+        "mpc": "0x3A4Ec09C6de78CD7cAddA6bd600aBE32fDfbF907",
         "portalWhitelistToken": "0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b"
     },
     "fork": {
-        "wrapper": "0x809d550fca64d94Bd9F66E60752A544199cfAC3D",
-        "mpc": "0xDe0993EEF347d72C7Bd1f26fC43B66e52A8d5C3f",
-        "portalWhitelistToken": "0x36C02dA8a0983159322a80FFE9F24b1acfF8B570"
+        "wrapper": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+        "mpc": "0x3A4Ec09C6de78CD7cAddA6bd600aBE32fDfbF907",
+        "portalWhitelistToken": "0x5FbDB2315678afecb367f032d93F642f64180aa3"
     }
 }

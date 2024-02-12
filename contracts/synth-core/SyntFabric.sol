@@ -47,9 +47,9 @@ contract SyntFabric is OwnableUpgradeable, ISyntFabric {
      * @param _key of hashed realTokenAdr and chainID
      */
     function getSyntRepresentationByKey(bytes32 _key)
-        public
-        view
-        returns (address)
+    public
+    view
+    returns (address)
     {
         return representationSynt[_key];
     }
@@ -60,15 +60,15 @@ contract SyntFabric is OwnableUpgradeable, ISyntFabric {
      * @param _chainID Chain id of the network
      */
     function getSyntRepresentation(address _realTokenAdr, uint256 _chainID)
-        public
-        view
-        override
-        returns (address)
+    public
+    view
+    override
+    returns (address)
     {
         return
-            representationSynt[
-                keccak256(abi.encodePacked(_realTokenAdr, _chainID))
-            ];
+        representationSynt[
+        keccak256(abi.encodePacked(_realTokenAdr, _chainID))
+        ];
     }
 
     /**
@@ -76,17 +76,17 @@ contract SyntFabric is OwnableUpgradeable, ISyntFabric {
      * @param _syntTokenAdr address of synt token
      */
     function getRealRepresentation(address _syntTokenAdr)
-        public
-        view
-        override
-        returns (address)
+    public
+    view
+    override
+    returns (address)
     {
         return representationReal[_syntTokenAdr];
     }
 
     /// ** EXTERNAL functions **
-     /**
-     * @notice Burns synthetic tokens
+    /**
+    * @notice Burns synthetic tokens
      */
     function unsynthesize(
         address _to,
@@ -161,7 +161,7 @@ contract SyntFabric is OwnableUpgradeable, ISyntFabric {
         );
         representationReal[address(syntToken)] = _rtoken;
         representationSynt[
-            keccak256(abi.encodePacked(_rtoken, _chainID))
+        keccak256(abi.encodePacked(_rtoken, _chainID))
         ] = address(syntToken);
 
         emit RepresentationCreated(_rtoken, _chainID, address(syntToken));

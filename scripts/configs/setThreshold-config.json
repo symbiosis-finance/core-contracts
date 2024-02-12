@@ -1,20 +1,29 @@
 {
-  "bsct": {
+  "bsc": {
     "threshold": 10
   },
-  "fuji": {
+  "eth": {
     "threshold": 10
   },
-  "heco": {
+  "avalanche": {
     "threshold": 10
   },
-  "mumbai": {
+  "mantle": {
     "threshold": 10
   },
-  "okex": {
+  "polygon": {
     "threshold": 10
   },
-  "rinkeby": {
+  "boba_bnb": {
+    "threshold": 10
+  },
+  "boba_eth": {
+    "threshold": 10
+  },
+  "boba_avax": {
+    "threshold": 10
+  },
+  "telos": {
     "threshold": 10
   },
   "fork": {

@@ -98,10 +98,7 @@ describe("Should check burnSyntToken", function () {
 
 	it("Should fail on burnSyntheticToken with incorrect synt", async () => {
 		const unsyntAmount = constants.WeiPerEther.mul(5);
-
-		const ERC20Abi = require('../abi/ERC20Mock.json');
-		const ERC20Mock = await ethers.getContractFactory(ERC20Abi.abi, ERC20Abi.bytecode);
-
+		const ERC20Mock = await ethers.getContractFactory("ERC20Mock");
 		let fakeSynt = await ERC20Mock.deploy("Fake Synt", "Fake Synt", 18);
 		await fakeSynt.mint(user.address, constants.WeiPerEther.mul(5));
 		let clientId = ethers.utils.formatBytes32String("some client id");
@@ -146,10 +143,27 @@ describe("Should check burnSyntToken", function () {
 			burnReceipt
 		);
 
+		const abiCoder = ethers.utils.defaultAbiCoder;
+		let burnRequest = burnReceipt.events.filter((x) => {
+			return x.topics.includes(library.burnRequestTopic);
+		});
+		let burnRequestArgs = abiCoder.decode(
+			["bytes32", "address", "uint256", "address"],
+			burnRequest[0].data
+		);
+		const cross_chain_id_burn_request = burnRequestArgs[0];
+
 		let bytesSelectorUnsynt = oracleRequestUnsyntArgs[1];
 		let receiveSideUnsynt = oracleRequestUnsyntArgs[2];
 
-		await bridge.receiveRequestV2(bytesSelectorUnsynt, receiveSideUnsynt);
+		const unsyntTx = await bridge.receiveRequestV2(bytesSelectorUnsynt, receiveSideUnsynt);
+		const unsyntTxReceipt = await unsyntTx.wait();
+
+		let burnCompleted = unsyntTxReceipt.events.filter((x) => {
+			return x.topics.includes(cross_chain_id_burn_request);
+		});
+
+		expect(burnCompleted).not.to.be.empty;
 
 		expect(unsyntAmount.sub(stableBridgingFee)).to.equal(
 			await testToken.balanceOf(user.address)

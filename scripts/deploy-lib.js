@@ -2,9 +2,16 @@ const { ethers, upgrades } = require("hardhat");
 const fs = require("fs");
 const path = require("path");
 const { timeout } = require("./utils/timeout.js");
+const {parseEther, parseUnits} = require("ethers/lib/utils");
 const trustedForwarder = ethers.constants.AddressZero;
 
 module.exports = {
+	getSynthRepresentation: async function (fabricAddress, realTokenAddress, realTokenChainId) {
+		const Fabric = await ethers.getContractFactory("SyntFabric");
+		const fabric = await Fabric.attach(fabricAddress);
+
+		return (await fabric.getSyntRepresentation(realTokenAddress, realTokenChainId));
+	},
 	deployContracts: async function (
 		wrapperAddress,
 		mpcAddress,
@@ -22,6 +29,7 @@ module.exports = {
 
 		let synthesis, portal, fabric;
 		let result = { deployer: deployer.address, nonEvm: nonEvm };
+		const threshold = parseEther('0.005');
 
 		// METAROUTER
 		const MetaRouter = await ethers.getContractFactory(
@@ -44,6 +52,7 @@ module.exports = {
 		const bridge = await upgrades.deployProxy(Bridge, [mpcAddress]);
 		await bridge.deployed();
 		console.log("Bridge V2 deployed to:", bridge.address);
+		await bridge.setAdminPermission("0xd99ac0681b904991169a4f398B9043781ADbe0C3", true);
 
 		// SYMBIOSIS MULTICALL
 		const MulticallRouter = await ethers.getContractFactory(
@@ -91,7 +100,13 @@ module.exports = {
 			await portal.deployed();
 			console.log("Portal deployed to:", portal.address);
 			await bridge.setTransmitterStatus(portal.address, true);
+			await portal.setTokenThreshold(portalWhitelistToken, threshold);
 		}
+
+		// const Unwrapper = await ethers.getContractFactory("Unwrapper");
+		// const unwrapper = await Unwrapper.deploy(wrapperAddress);
+		// console.log("Unwrapper deployed to:", unwrapper.address);
+		// result["unwrapper"] = unwrapper.address;
 
 		await timeout(15000);
 

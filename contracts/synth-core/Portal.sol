@@ -67,10 +67,10 @@ contract Portal is RelayRecipientUpgradeable {
     /// ** EVENTS **
 
     event SynthesizeRequest(
-        bytes32 id,
+        bytes32 id, // todo it wasn't indexed
         address indexed from,
         uint256 indexed chainID,
-        address indexed revertableAddress,
+        address indexed revertableAddress, // todo it was indexed
         address to,
         uint256 amount,
         address token
@@ -84,6 +84,7 @@ contract Portal is RelayRecipientUpgradeable {
 
     event BurnCompleted(
         bytes32 indexed id,
+        bytes32 indexed crossChainID,
         address indexed to,
         uint256 amount,
         uint256 bridgingFee,
@@ -344,7 +345,7 @@ contract Portal is RelayRecipientUpgradeable {
         emit RevertSynthesizeCompleted(
             _externalID,
             txState.recipient,
-            txState.amount - _stableBridgingFee, 
+            txState.amount - _stableBridgingFee,
             _stableBridgingFee,
             txState.rtoken
         );
@@ -362,6 +363,7 @@ contract Portal is RelayRecipientUpgradeable {
     function unsynthesize(
         uint256 _stableBridgingFee,
         bytes32 _externalID,
+        bytes32 _crossChainID,
         address _token,
         uint256 _amount,
         address _to
@@ -374,7 +376,7 @@ contract Portal is RelayRecipientUpgradeable {
         unsynthesizeStates[_externalID] = UnsynthesizeState.Unsynthesized;
         TransferHelper.safeTransfer(_token, _to, _amount - _stableBridgingFee);
         TransferHelper.safeTransfer(_token, bridge, _stableBridgingFee);
-        emit BurnCompleted(_externalID, _to, _amount - _stableBridgingFee, _stableBridgingFee, _token);
+        emit BurnCompleted(_externalID, _crossChainID, _to, _amount - _stableBridgingFee, _stableBridgingFee, _token);
     }
 
     /**
@@ -391,6 +393,7 @@ contract Portal is RelayRecipientUpgradeable {
      */
     function metaUnsynthesize(
         uint256 _stableBridgingFee,
+        bytes32 _crossChainID,
         bytes32 _externalID,
         address _to,
         uint256 _amount,
@@ -411,7 +414,7 @@ contract Portal is RelayRecipientUpgradeable {
 
         if (_finalCalldata.length == 0) {
             TransferHelper.safeTransfer(_rToken, _to, _amount);
-            emit BurnCompleted(_externalID, address(this), _amount, _stableBridgingFee, _rToken);
+            emit BurnCompleted(_externalID, _crossChainID, address(this), _amount, _stableBridgingFee, _rToken);
             return;
         }
 
@@ -423,9 +426,9 @@ contract Portal is RelayRecipientUpgradeable {
         );
 
         // metaRouter call
-        metaRouter.externalCall(_rToken, _amount, _finalReceiveSide, _finalCalldata, _finalOffset);
+        metaRouter.externalCall(_rToken, _amount, _finalReceiveSide, _finalCalldata, _finalOffset, _to);
 
-        emit BurnCompleted(_externalID, address(this), _amount, _stableBridgingFee, _rToken);
+        emit BurnCompleted(_externalID, _crossChainID, address(this), _amount, _stableBridgingFee, _rToken);
     }
 
     /**
@@ -472,10 +475,10 @@ contract Portal is RelayRecipientUpgradeable {
         emit ClientIdLog(_internalID, _clientID);
     }
 
-     function metaRevertRequest(
+    function metaRevertRequest(
         MetaRouteStructs.MetaRevertTransaction memory _metaRevertTransaction
     ) external whenNotPaused {
-         if (_metaRevertTransaction.swapCalldata.length != 0){
+        if (_metaRevertTransaction.swapCalldata.length != 0){
             bytes32 externalID = keccak256(abi.encodePacked(_metaRevertTransaction.internalID, address(this), _msgSender(), block.chainid));
 
             require(
@@ -488,13 +491,13 @@ contract Portal is RelayRecipientUpgradeable {
             {
                 bytes memory out = abi.encodeWithSelector(
                     bytes4(keccak256(bytes("revertMetaBurn(uint256,bytes32,address,bytes,address,address,bytes)"))),
-                        _metaRevertTransaction.stableBridgingFee,
-                        externalID,
-                        _metaRevertTransaction.router,
-                        _metaRevertTransaction.swapCalldata,
-                        _metaRevertTransaction.sourceChainSynthesis,
-                        _metaRevertTransaction.burnToken,
-                        _metaRevertTransaction.burnCalldata
+                    _metaRevertTransaction.stableBridgingFee,
+                    externalID,
+                    _metaRevertTransaction.router,
+                    _metaRevertTransaction.swapCalldata,
+                    _metaRevertTransaction.sourceChainSynthesis,
+                    _metaRevertTransaction.burnToken,
+                    _metaRevertTransaction.burnCalldata
                 );
 
                 IBridge(bridge).transmitRequestV2(
@@ -506,56 +509,56 @@ contract Portal is RelayRecipientUpgradeable {
                 emit RevertBurnRequest(_metaRevertTransaction.internalID, _msgSender());
                 emit ClientIdLog(_metaRevertTransaction.internalID, _metaRevertTransaction.clientID);
             }
-         } else {
-             if (_metaRevertTransaction.burnCalldata.length != 0){
-                 bytes32 externalID = keccak256(abi.encodePacked(_metaRevertTransaction.internalID, address(this), _msgSender(), block.chainid));
+        } else {
+            if (_metaRevertTransaction.burnCalldata.length != 0){
+                bytes32 externalID = keccak256(abi.encodePacked(_metaRevertTransaction.internalID, address(this), _msgSender(), block.chainid));
 
-                 require(
-                     unsynthesizeStates[externalID] != UnsynthesizeState.Unsynthesized,
-                     "Symb: Real tokens already transfered"
-                 );
+                require(
+                    unsynthesizeStates[externalID] != UnsynthesizeState.Unsynthesized,
+                    "Symb: Real tokens already transfered"
+                );
 
-                 unsynthesizeStates[externalID] = UnsynthesizeState.RevertRequest;
+                unsynthesizeStates[externalID] = UnsynthesizeState.RevertRequest;
 
-                 bytes memory out = abi.encodeWithSelector(
-                     bytes4(keccak256(bytes("revertBurnAndBurn(uint256,bytes32,address,address,uint256,address)"))),
-                        _metaRevertTransaction.stableBridgingFee,
-                         externalID,
-                         address(this),
-                        _metaRevertTransaction.sourceChainBridge,
-                        block.chainid,
-                        _msgSender()
-                 );
+                bytes memory out = abi.encodeWithSelector(
+                    bytes4(keccak256(bytes("revertBurnAndBurn(uint256,bytes32,address,address,uint256,address)"))),
+                    _metaRevertTransaction.stableBridgingFee,
+                    externalID,
+                    address(this),
+                    _metaRevertTransaction.sourceChainBridge,
+                    block.chainid,
+                    _msgSender()
+                );
 
-                 IBridge(bridge).transmitRequestV2(
-                     out,
-                     _metaRevertTransaction.sourceChainSynthesis,
-                     _metaRevertTransaction.managerChainBridge,
-                     _metaRevertTransaction.managerChainId
-                 );
-                 emit RevertBurnRequest(_metaRevertTransaction.internalID, _msgSender());
-                 emit ClientIdLog(_metaRevertTransaction.internalID, _metaRevertTransaction.clientID);
-             } else {
-                 bytes memory out = abi.encodeWithSelector(
-                     bytes4(keccak256(bytes("revertSynthesizeRequestByBridge(uint256,bytes32,address,address,uint256,address,bytes32)"))),
-                        _metaRevertTransaction.stableBridgingFee,
-                        _metaRevertTransaction.internalID,
-                        _metaRevertTransaction.receiveSide,
-                        _metaRevertTransaction.sourceChainBridge,
-                        block.chainid,
-                        _msgSender(),
-                        _metaRevertTransaction.clientID
-                 );
+                IBridge(bridge).transmitRequestV2(
+                    out,
+                    _metaRevertTransaction.sourceChainSynthesis,
+                    _metaRevertTransaction.managerChainBridge,
+                    _metaRevertTransaction.managerChainId
+                );
+                emit RevertBurnRequest(_metaRevertTransaction.internalID, _msgSender());
+                emit ClientIdLog(_metaRevertTransaction.internalID, _metaRevertTransaction.clientID);
+            } else {
+                bytes memory out = abi.encodeWithSelector(
+                    bytes4(keccak256(bytes("revertSynthesizeRequestByBridge(uint256,bytes32,address,address,uint256,address,bytes32)"))),
+                    _metaRevertTransaction.stableBridgingFee,
+                    _metaRevertTransaction.internalID,
+                    _metaRevertTransaction.receiveSide,
+                    _metaRevertTransaction.sourceChainBridge,
+                    block.chainid,
+                    _msgSender(),
+                    _metaRevertTransaction.clientID
+                );
 
-                 IBridge(bridge).transmitRequestV2(
-                     out,
-                     _metaRevertTransaction.sourceChainSynthesis,
-                     _metaRevertTransaction.managerChainBridge,
-                     _metaRevertTransaction.managerChainId
-                 );
-             }
-         }
-         emit MetaRevertRequest(_metaRevertTransaction.internalID, _msgSender());
+                IBridge(bridge).transmitRequestV2(
+                    out,
+                    _metaRevertTransaction.sourceChainSynthesis,
+                    _metaRevertTransaction.managerChainBridge,
+                    _metaRevertTransaction.managerChainId
+                );
+            }
+        }
+        emit MetaRevertRequest(_metaRevertTransaction.internalID, _msgSender());
     }
 
     // ** ONLYOWNER functions **
@@ -638,12 +641,13 @@ contract Portal is RelayRecipientUpgradeable {
                     bytes4(
                         keccak256(
                             bytes(
-                                "mintSyntheticToken(uint256,bytes32,address,uint256,uint256,address)"
+                                "mintSyntheticToken(uint256,bytes32,bytes32,address,uint256,uint256,address)"
                             )
                         )
                     ),
                     _stableBridgingFee,
                     externalID,
+                    internalID,
                     _token,
                     block.chainid,
                     _amount,
@@ -651,11 +655,11 @@ contract Portal is RelayRecipientUpgradeable {
                 );
 
                 requests[externalID] = TxState({
-                recipient : _msgSender(),
-                chain2address : _chain2address,
-                rtoken : _token,
-                amount : _amount,
-                state : RequestState.Sent
+                    recipient : _msgSender(),
+                    chain2address : _chain2address,
+                    rtoken : _token,
+                    amount : _amount,
+                    state : RequestState.Sent
                 });
 
                 requestCount++;
@@ -705,6 +709,7 @@ contract Portal is RelayRecipientUpgradeable {
         memory _metaMintTransaction = MetaRouteStructs.MetaMintTransaction(
             _metaSynthesizeTransaction.stableBridgingFee,
             _metaSynthesizeTransaction.amount,
+            internalID,
             externalID,
             _metaSynthesizeTransaction.rtoken,
             block.chainid,
@@ -719,17 +724,17 @@ contract Portal is RelayRecipientUpgradeable {
 
         {
             bytes memory out = abi.encodeWithSignature(
-            "metaMintSyntheticToken((uint256,uint256,bytes32,address,uint256,address,address[],"
-            "address,bytes,address,bytes,uint256))",
-            _metaMintTransaction
+                "metaMintSyntheticToken((uint256,uint256,bytes32,bytes32,address,uint256,address,address[],"
+                "address,bytes,address,bytes,uint256))",
+                _metaMintTransaction
             );
 
             requests[externalID] = TxState({
-            recipient : _metaSynthesizeTransaction.syntCaller,
-            chain2address : _metaSynthesizeTransaction.chain2address,
-            rtoken : _metaSynthesizeTransaction.rtoken,
-            amount : _metaSynthesizeTransaction.amount,
-            state : RequestState.Sent
+                recipient : _metaSynthesizeTransaction.syntCaller,
+                chain2address : _metaSynthesizeTransaction.chain2address,
+                rtoken : _metaSynthesizeTransaction.rtoken,
+                amount : _metaSynthesizeTransaction.amount,
+                state : RequestState.Sent
             });
 
             requestCount++;

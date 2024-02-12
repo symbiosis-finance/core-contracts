@@ -2,7 +2,6 @@ const { expect } = require("chai");
 const { constants, utils } = require("ethers");
 const { ethers } = require("hardhat");
 const library = require("./library");
-const ERC20Abi = require("../abi/ERC20Mock.json");
 
 const hardhatChainID = 31337;
 const trustedForwarder = "0x83A54884bE4657706785D7309cf46B58FE5f6e8a";
@@ -208,7 +207,23 @@ describe("Should check snts", function () {
 			let syntBytesSelector = oracleRequestArgs[1];
 			let receiveSideSynt = oracleRequestArgs[2];
 
-			await bridge.receiveRequestV2(syntBytesSelector, receiveSideSynt);
+			const abiCoder = ethers.utils.defaultAbiCoder;
+			let synthesizeRequest = receiptSynt.events.filter((x) => {
+				return x.topics.includes(library.synthesizeRequestTopic);
+			});
+			let synthesizeRequestArgs = abiCoder.decode(
+				["bytes32", "address", "uint256", "address"],
+				synthesizeRequest[0].data
+			);
+			const cross_chain_id_synthesize_request = synthesizeRequestArgs[0];
+
+			const txMint = await bridge.receiveRequestV2(syntBytesSelector, receiveSideSynt);
+			const txMintReceipt = await txMint.wait();
+
+			let synthesizeCompleted = txMintReceipt.events.filter((x) => {
+				return x.topics.includes(cross_chain_id_synthesize_request);
+			});
+			expect(synthesizeCompleted).not.to.be.empty;
 
 			expect(oldBalance.sub(syntAmount)).to.equal(
 				await testToken.balanceOf(owner.address)
@@ -288,9 +303,8 @@ describe("Should check snts", function () {
 
 		it("Should fail on synthesation token that has no synt representation", async () => {
 			const syntAmount = constants.WeiPerEther.mul(10);
-			const ERC20Abi = require("../abi/ERC20Mock.json");
-			const TestToken = await ethers.getContractFactory(ERC20Abi.abi, ERC20Abi.bytecode);
-			let testToken2 = await TestToken.deploy("First Token", "FIRST", 18);
+			const TestToken = await ethers.getContractFactory("GenericERC20");
+			let testToken2 = await TestToken.deploy("First Token", "FIRST");
 			const mintableAmount = constants.WeiPerEther.mul(20);
 
 			await testToken2.mint(owner.address, mintableAmount);
@@ -353,6 +367,7 @@ describe("Should check snts", function () {
 				portal.unsynthesize(
 					stableBridgingFee,
 					bytes32Id,
+					bytes32Id,
 					testToken.address,
 					syntAmount,
 					user.address
@@ -384,10 +399,11 @@ describe("Should check snts", function () {
 			await portal.pause();
 
 			let iface = new ethers.utils.Interface([
-				"function unsynthesize(uint256,bytes32,address,uint256,address)",
+				"function unsynthesize(uint256,bytes32,bytes32,address,uint256,address)",
 			]);
 			let unsyntCallData = iface.encodeFunctionData("unsynthesize", [
 				stableBridgingFee,
+				bytes32Id,
 				bytes32Id,
 				testToken.address,
 				syntAmount,
@@ -421,10 +437,11 @@ describe("Should check snts", function () {
 			);
 
 			let iface = new ethers.utils.Interface([
-				"function unsynthesize(uint256,bytes32,address,uint256,address)",
+				"function unsynthesize(uint256,bytes32,bytes32,address,uint256,address)",
 			]);
 			let unsyntCallData = iface.encodeFunctionData("unsynthesize", [
 				stableBridgingFee,
+				bytes32Id,
 				bytes32Id,
 				testToken.address,
 				syntAmount,
@@ -433,6 +450,7 @@ describe("Should check snts", function () {
 
 			let unsyntCallData2 = iface.encodeFunctionData("unsynthesize", [
 				stableBridgingFee,
+				bytes32Id,
 				bytes32Id,
 				testToken.address,
 				syntAmount,
@@ -469,10 +487,11 @@ describe("Should check snts", function () {
 			let tokenBalanceOld = await testToken.balanceOf(user.address);
 
 			let iface = new ethers.utils.Interface([
-				"function unsynthesize(uint256,bytes32,address,uint256,address)",
+				"function unsynthesize(uint256,bytes32,bytes32,address,uint256,address)",
 			]);
 			let unsyntCallData = iface.encodeFunctionData("unsynthesize", [
 				stableBridgingFee,
+				bytes32Id,
 				bytes32Id,
 				testToken.address,
 				syntAmount,

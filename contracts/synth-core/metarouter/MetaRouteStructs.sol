@@ -6,6 +6,7 @@ library MetaRouteStructs {
     struct MetaBurnTransaction {
         uint256 stableBridgingFee;
         uint256 amount;
+        bytes32 crossChainID;
         address syntCaller;
         address finalReceiveSide;
         address sToken;
@@ -22,6 +23,7 @@ library MetaRouteStructs {
     struct MetaMintTransaction {
         uint256 stableBridgingFee;
         uint256 amount;
+        bytes32 crossChainID;
         bytes32 externalID;
         address tokenReal;
         uint256 chainID;

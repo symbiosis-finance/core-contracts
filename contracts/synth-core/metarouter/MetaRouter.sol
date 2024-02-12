@@ -5,6 +5,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/utils/Context.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@uniswap/lib/contracts/libraries/TransferHelper.sol";
 import "./MetaRouteStructs.sol";
 import "./MetaRouterGateway.sol";
 import "../../utils/RevertMessageParser.sol";
@@ -16,6 +17,12 @@ import "../../utils/RevertMessageParser.sol";
  */
 contract MetaRouter is Context {
     MetaRouterGateway public immutable metaRouterGateway;
+
+    event TransitTokenSent(
+        address to,
+        uint256 amount,
+        address token
+    );
 
     constructor() {
         metaRouterGateway = new MetaRouterGateway(address(this));
@@ -166,12 +173,18 @@ contract MetaRouter is Context {
         uint256 _amount,
         address _receiveSide,
         bytes calldata _calldata,
-        uint256 _offset
+        uint256 _offset,
+        address _to
     ) external {
-        (bool success, bytes memory data) = _externalCall(_token, _amount, _receiveSide, _calldata, _offset);
+        (bool success,) = _externalCall(_token, _amount, _receiveSide, _calldata, _offset);
 
         if (!success) {
-            revert(RevertMessageParser.getRevertMessage(data, "MetaRouter: external call failed"));
+            TransferHelper.safeTransfer(
+                _token,
+                _to,
+                _amount
+            );
+            emit TransitTokenSent(_to, _amount, _token);
         }
     }
 
@@ -245,13 +258,20 @@ contract MetaRouter is Context {
             finalCallToken = _metaMintTransaction.swapTokens[1];
         }
         if (_metaMintTransaction.finalCalldata.length != 0) {
+            // patch crossChainID
+            bytes32 crossChainID = _metaMintTransaction.crossChainID;
+            bytes memory calldata_ = _metaMintTransaction.finalCalldata;
+            assembly {
+                mstore(add(calldata_, 132), crossChainID)
+            }
+
             uint256 finalAmountIn = IERC20(finalCallToken).balanceOf(address(this));
             // external call
             (bool finalSuccess, bytes memory finalData) = _externalCall(
                 finalCallToken,
                 finalAmountIn,
                 _metaMintTransaction.finalReceiveSide,
-                _metaMintTransaction.finalCalldata,
+                calldata_,
                 _metaMintTransaction.finalOffset
             );
 

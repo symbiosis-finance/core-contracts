@@ -10,7 +10,7 @@ async function main() {
 	const portalWhitelistToken = config[network].portalWhitelistToken;
 
 	const deployPortal = true;
-	const deploySynthesis = true;
+	const deploySynthesis = false;
 
 	await library.deployContracts(
 		wrapper,

@@ -9,15 +9,14 @@ async function main() {
     const network = hre.network.name;
     const currentDeployment = require(`../deployments/deployWithBridgeV2-${network}.json`);
 
-    const Bridge = await ethers.getContractFactory("BridgeV2");
-    const bridge = await Bridge.attach(currentDeployment["bridge"].proxy);
-    console.log('BridgeV2 attached to', bridge.address);
+    const Portal = await ethers.getContractFactory("Portal");
+    const portal = await Portal.attach(currentDeployment["portal"].proxy);
+    console.log('Portal attached to', portal.address);
 
-    const newMPC = "0x7AC17F4F37b568E33ecdBB458f38f13C5F717332"; // TODO: check address before run
-
-    await bridge.changeMPC(newMPC);
+    const token = '0x126969743a6d300bab08F303f104f0f7DBAfbe20';
+    await portal.setWhitelistToken(token, true);
     await timeout(15000);
-    console.log("MPC changed to", await bridge.mpc());
+    console.log('token status', await portal.tokenWhitelist(token));
 }
 
 main()

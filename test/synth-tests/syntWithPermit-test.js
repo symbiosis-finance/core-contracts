@@ -102,8 +102,8 @@ describe("Should check synthesation with permit", function () {
 	beforeEach(async () => {
 		[owner, user] = await ethers.getSigners();
 
-		const TestToken = await ethers.getContractFactory("SyntERC20");
-		const STestToken = await ethers.getContractFactory("SyntERC20");
+		const TestToken = await getContractFactory("SyntERC20");
+		const STestToken = await getContractFactory("SyntERC20");
 
 		[
 			wrapper,

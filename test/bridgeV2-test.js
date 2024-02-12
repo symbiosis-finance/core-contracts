@@ -2,8 +2,6 @@ const { expect } = require("chai");
 const { constants } = require("ethers");
 const { ethers } = require("hardhat");
 const library = require("./synth-tests/library");
-const wethAbi = require("./abi/WETH9.json");
-const ERC20Abi = require('./abi/ERC20Mock.json');
 
 const hardhatChainID = 31337;
 const stableBridgingFee = 100;
@@ -20,18 +18,17 @@ describe("Should check bridgeV2 functions", function () {
 		[owner, user, mpc, admin] = await ethers.getSigners();
 
 		// get factories for contracts
-		const Wrapper = await ethers.getContractFactory(wethAbi.abi, wethAbi.bytecode);
-		const Portal = await ethers.getContractFactory("Portal");
-		const Synthesis = await ethers.getContractFactory("Synthesis");
-		const TestToken = await ethers.getContractFactory(ERC20Abi.abi, ERC20Abi.bytecode);
-
-		const Fabric = await ethers.getContractFactory("SyntFabric");
-		const STestToken = await ethers.getContractFactory("SyntERC20");
-		const Bridge = await ethers.getContractFactory("BridgeV2");
-		const MetaRouter = await ethers.getContractFactory("MetaRouter");
+		const Wrapper = await getContractFactory("WETH9");
+		const Portal = await getContractFactory("Portal");
+		const Synthesis = await getContractFactory("Synthesis");
+		const TestToken = await getContractFactory("GenericERC20");
+		const Fabric = await getContractFactory("SyntFabric");
+		const STestToken = await getContractFactory("SyntERC20");
+		const Bridge = await getContractFactory("BridgeV2");
+		const MetaRouter = await getContractFactory("MetaRouter");
 
 		//deploy tokens
-		testToken = await TestToken.deploy("First Token", "FIRST", 18);
+		testToken = await TestToken.deploy("First Token", "FIRST");
 
 		let wrapper = await Wrapper.deploy();
 
@@ -121,6 +118,7 @@ describe("Should check bridgeV2 functions", function () {
 		await bridge
 			.connect(mpc)
 			.receiveRequestV2(syntBytesSelector, receiveSideSynt);
+		console.log("here");
 
 		const unsyntAmount = constants.WeiPerEther.mul(5);
 

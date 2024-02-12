@@ -1,11 +1,15 @@
 const { ethers } = require("hardhat");
-const { BigNumber } = require("ethers");
 const path = require("path");
 const fs = require("fs");
 const { timeout } = require("../../utils/utils");
+const {parseUnits} = require("ethers/lib/utils");
 
 async function main() {
     const network = hre.network.name;
+    const [owner] = await ethers.getSigners();
+    console.log("Setup contracts with the account:", owner.address);
+    console.log("Account balance:", (await owner.getBalance()).toString());
+
     const config = require("../configs/setThreshold-config.json");
     const currentDeploymentConfig = require(`../configs/deployWithBridgeV2-config.json`);
     const currentDeployment = require(`../deployments/deployWithBridgeV2-${network}.json`);
@@ -22,59 +26,53 @@ async function main() {
         currentDeploymentRepresentations = require(`../deployments/createRepresentations-${network}.json`);
     }
 
-    const portalAddress = currentDeployment.portal.proxy;
-    const synthesisAddress = currentDeployment.synthesis.proxy;
+    const thresholdToSet = config[network].threshold;
 
-    const Synthesis = await ethers.getContractFactory("Synthesis");
-    const Portal = await ethers.getContractFactory("Portal");
     const SyntERC20 = await ethers.getContractFactory("SyntERC20");
     const ERC20 = await ethers.getContractFactory("@openzeppelin/contracts/token/ERC20/ERC20.sol:ERC20");
 
-    const thresholdToSet = config[network].threshold;
-    const realTokenAddress =
-        currentDeploymentConfig[network].portalWhitelistToken; // token to set threshold on portal
-    console.log("real token address", realTokenAddress);
+    if (currentDeployment.portal) {
+        const Portal = await ethers.getContractFactory("Portal");
+        const portal = await Portal.attach(currentDeployment.portal.proxy);
 
-    const [owner] = await ethers.getSigners();
-    console.log("Setup contracts with the account:", owner.address);
-    console.log("Account balance:", (await owner.getBalance()).toString());
+        const realTokenAddress = currentDeploymentConfig[network].portalWhitelistToken; // token to set threshold on portal
+        console.log("real token address", realTokenAddress);
+        let realToken = await ERC20.attach(realTokenAddress);
 
-    const portal = await Portal.attach(portalAddress);
-    const synthesis = await Synthesis.attach(synthesisAddress);
-
-    let realToken = await ERC20.attach(realTokenAddress);
-    let multiplier = BigNumber.from("10").pow(await realToken.decimals());
-
-    await portal.setTokenThreshold(
-        realTokenAddress,
-        BigNumber.from(thresholdToSet).mul(multiplier)
-    );
-
-    await timeout(15000);
-    console.log(
-        "Portal real token and threshold:",
-        realTokenAddress,
-        (await portal.tokenThreshold(realTokenAddress)).toString()
-    );
-
-    for (let i = 0; i < currentDeploymentRepresentations.tokens.length; i++) {
-        let synthTokenAddress =
-            currentDeploymentRepresentations.tokens[i].syntRepr;
-
-        let synthToken = await SyntERC20.attach(synthTokenAddress);
-        multiplier = BigNumber.from("10").pow(await synthToken.decimals());
-
-        await synthesis.setTokenThreshold(
-            synthTokenAddress,
-            BigNumber.from(thresholdToSet).mul(multiplier)
+        await portal.setTokenThreshold(
+            realTokenAddress,
+            parseUnits(thresholdToSet.toString(), await realToken.decimals())
         );
 
         await timeout(15000);
         console.log(
-            "Synthesis synth token and threshold:",
-            synthTokenAddress,
-            (await synthesis.tokenThreshold(synthTokenAddress)).toString()
+            "Portal real token, decimals and threshold:",
+            realTokenAddress,
+            await realToken.decimals(),
+            (await portal.tokenThreshold(realTokenAddress)).toString()
         );
+    }
+    if (currentDeployment.synthesis) {
+        const Synthesis = await ethers.getContractFactory("Synthesis");
+        const synthesis = await Synthesis.attach(currentDeployment.synthesis.proxy);
+
+        for (let i = 0; i < currentDeploymentRepresentations.tokens.length; i++) {
+            let synthTokenAddress = currentDeploymentRepresentations.tokens[i].syntRepr;
+            let synthToken = await SyntERC20.attach(synthTokenAddress);
+
+            await synthesis.setTokenThreshold(
+                synthTokenAddress,
+                parseUnits(thresholdToSet.toString(), await synthToken.decimals())
+            );
+
+            await timeout(15000);
+            console.log(
+                "Synthesis synth token, decimals and threshold:",
+                synthTokenAddress,
+                await synthToken.decimals(),
+                (await synthesis.tokenThreshold(synthTokenAddress)).toString()
+            );
+        }
     }
 }
 
