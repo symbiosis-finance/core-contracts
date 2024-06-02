@@ -5,8 +5,7 @@ cache
 .env
 set-env.sh
 .idea
-.openzeppelin/unknown-31337.json
-.openzeppelin/unknown-31337.json
+.openzeppelin/
 artifacts
 
 # Config files
