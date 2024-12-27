@@ -27,6 +27,11 @@ contract Synthesis is RelayRecipientUpgradeable {
 
     /// ** STRUCTS **
 
+    struct TonAddress {
+        int8 workchain;
+        bytes32 address_hash;
+    }
+
     enum RequestState {
         Default,
         Sent,
@@ -54,6 +59,16 @@ contract Synthesis is RelayRecipientUpgradeable {
         uint256 indexed chainID,
         address indexed revertableAddress,
         address to,
+        uint256 amount,
+        address token
+    );
+
+    event BurnRequestTON(
+        bytes32 id,
+        address indexed from,
+        uint256 indexed chainID,
+        address indexed revertableAddress,
+        TonAddress to,
         uint256 amount,
         address token
     );
@@ -372,12 +387,12 @@ contract Synthesis is RelayRecipientUpgradeable {
             );
 
             requests[externalID] = TxState({
-                recipient: _msgSender(),
-                chain2address: _chain2address,
-                token: rtoken,
-                stoken: _stoken,
-                amount: _amount,
-                state: RequestState.Sent
+            recipient: _msgSender(),
+            chain2address: _chain2address,
+            token: rtoken,
+            stoken: _stoken,
+            amount: _amount,
+            state: RequestState.Sent
             });
 
             requestCount++;
@@ -392,6 +407,79 @@ contract Synthesis is RelayRecipientUpgradeable {
         emit BurnRequest(internalID, _msgSender(), _chainID, _revertableAddress, _chain2address, _amount, _stoken);
         emit ClientIdLog(internalID, _clientID);
     }
+
+    /**
+     * @notice Sends burn request to TON
+     * @dev sToken -> Token on a second chain
+     * @param _stableBridgingFee Bridging fee on another network
+     * @param _stoken The address of the token that the user wants to burn
+     * @param _amount Number of tokens to burn
+     * @param _chain2address The address to which the user wants to receive tokens
+     * @param _receiveSide Synthesis address on another network
+     * @param _oppositeBridge Bridge address on another network
+     * @param _revertableAddress An address on another network that allows the user to revert a stuck request
+     * @param _chainID Chain id of the network where burning will take place
+     */
+    function burnSyntheticTokenTON(
+        uint256 _stableBridgingFee,
+        address _stoken,
+        uint256 _amount,
+        bytes32 _crossChainID,
+        TonAddress calldata _chain2address,
+        address _receiveSide,
+        address _oppositeBridge,
+        address _revertableAddress,
+        uint256 _chainID,
+        bytes32 _clientID
+    ) external whenNotPaused returns (bytes32 internalID) {
+        require(_amount >= tokenThreshold[_stoken], "Symb: amount under threshold");
+        ISyntFabric(fabric).unsynthesize(_msgSender(), _amount, _stoken);
+
+        {
+            address rtoken = ISyntFabric(fabric).getRealRepresentation(_stoken);
+            require(rtoken != address(0), "Symb: incorrect synt");
+
+            internalID = keccak256(
+                abi.encodePacked(this, requestCount, block.chainid)
+            );
+            bytes32 externalID = keccak256(abi.encodePacked(internalID, _receiveSide, _chainID));
+
+            bytes memory out = abi.encodeWithSelector(
+                bytes4(
+                    keccak256(
+                        bytes("unsynthesize(uint256,bytes32,bytes32,address,uint256,(int8,bytes32))")
+                    )
+                ),
+                _stableBridgingFee,
+                externalID,
+                _crossChainID,
+                rtoken,
+                _amount,
+                _chain2address
+            );
+
+            requests[externalID] = TxState({
+            recipient: _revertableAddress,
+            chain2address: _revertableAddress,
+            token: rtoken,
+            stoken: _stoken,
+            amount: _amount,
+            state: RequestState.Sent
+            });
+
+            requestCount++;
+
+            IBridge(bridge).transmitRequestV2(
+                out,
+                _receiveSide,
+                _oppositeBridge,
+                _chainID
+            );
+        }
+        emit BurnRequestTON(internalID, _msgSender(), _chainID, _revertableAddress, _chain2address, _amount, _stoken);
+        emit ClientIdLog(internalID, _clientID);
+    }
+
 
     /**
      * @notice Sends metaBurn request
@@ -448,12 +536,12 @@ contract Synthesis is RelayRecipientUpgradeable {
             );
 
             requests[externalID] = TxState({
-                recipient: _metaBurnTransaction.syntCaller,
-                chain2address: _metaBurnTransaction.chain2address,
-                token: rtoken,
-                stoken: _metaBurnTransaction.sToken,
-                amount: _metaBurnTransaction.amount,
-                state: RequestState.Sent
+            recipient: _metaBurnTransaction.syntCaller,
+            chain2address: _metaBurnTransaction.chain2address,
+            token: rtoken,
+            stoken: _metaBurnTransaction.sToken,
+            amount: _metaBurnTransaction.amount,
+            state: RequestState.Sent
             });
 
             requestCount++;
@@ -480,7 +568,7 @@ contract Synthesis is RelayRecipientUpgradeable {
     /**
      * @notice Emergency unburn
      * @dev Can called only by bridge after initiation on a second chain
-     * @param _stableBridgingFee Bridging fee 
+     * @param _stableBridgingFee Bridging fee
      * @param _externalID the synthesize transaction that was received from the event when it was originally called burn on the Synthesize contract
      */
     function revertBurn(uint256 _stableBridgingFee, bytes32 _externalID) external onlyBridge whenNotPaused {
@@ -556,12 +644,12 @@ contract Synthesis is RelayRecipientUpgradeable {
         );
 
         requests[externalID] = TxState({
-            recipient: _msgSender(),
-            chain2address: txState.chain2address,
-            token: rtoken,
-            stoken: txState.stoken,
-            amount: amount,
-            state: RequestState.Sent
+        recipient: _msgSender(),
+        chain2address: txState.chain2address,
+        token: rtoken,
+        stoken: txState.stoken,
+        amount: amount,
+        state: RequestState.Sent
         });
 
         requestCount++;
@@ -591,7 +679,7 @@ contract Synthesis is RelayRecipientUpgradeable {
             "Symb: state not open or tx does not exist"
         );
         txState.state = RequestState.Reverted;
-        // close    
+        // close
         ISyntFabric(fabric).synthesize(
             txState.recipient,
             txState.amount - _stableBridgingFee,
