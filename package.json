@@ -22,7 +22,7 @@
     "web3": "^1.7.1"
   },
   "dependencies": {
-    "undici": "^5.23.0",
+    "undici": "^6.23.0",
     "xmlhttprequest": "^1.8.0"
   }
 }
