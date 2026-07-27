@@ -24,8 +24,6 @@ contract Synthesis is RelayRecipientUpgradeable {
     mapping(address => uint256) public tokenThreshold;
 
     IMetaRouter public metaRouter;
-    bytes4 private constant TON_UNSYNTHESIZE_SELECTOR =
-        bytes4(keccak256(bytes("unsynthesize(uint256,bytes32,bytes32,address,uint256,(int8,bytes32))")));
 
     /// ** STRUCTS **
 
@@ -460,7 +458,7 @@ contract Synthesis is RelayRecipientUpgradeable {
                 _amount,
                 _chain2address
             );
-            out = abi.encodePacked(TON_UNSYNTHESIZE_SELECTOR, out);
+            out = abi.encodePacked(bytes4(keccak256(bytes("unsynthesize(uint256,bytes32,bytes32,address,uint256,(int8,bytes32))"))), out);
 
             requests[externalID] = TxState({
             recipient: _revertableAddress,
