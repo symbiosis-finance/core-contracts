@@ -24,6 +24,8 @@ contract Synthesis is RelayRecipientUpgradeable {
     mapping(address => uint256) public tokenThreshold;
 
     IMetaRouter public metaRouter;
+    bytes4 private constant TON_UNSYNTHESIZE_SELECTOR =
+        bytes4(keccak256(bytes("unsynthesize(uint256,bytes32,bytes32,address,uint256,(int8,bytes32))")));
 
     /// ** STRUCTS **
 
@@ -365,7 +367,10 @@ contract Synthesis is RelayRecipientUpgradeable {
 
         {
             address rtoken = ISyntFabric(fabric).getRealRepresentation(_stoken);
-            require(rtoken != address(0), "Symb: incorrect synt");
+            require(
+                ISyntFabric(fabric).getSyntRepresentation(rtoken, _chainID) == _stoken,
+                "Symb: incorrect synt"
+            );
 
             internalID = keccak256(
                 abi.encodePacked(this, requestCount, block.chainid)
@@ -437,19 +442,17 @@ contract Synthesis is RelayRecipientUpgradeable {
 
         {
             address rtoken = ISyntFabric(fabric).getRealRepresentation(_stoken);
-            require(rtoken != address(0), "Symb: incorrect synt");
+            require(
+                ISyntFabric(fabric).getSyntRepresentation(rtoken, _chainID) == _stoken,
+                "Symb: incorrect synt"
+            );
 
             internalID = keccak256(
                 abi.encodePacked(this, requestCount, block.chainid)
             );
             bytes32 externalID = keccak256(abi.encodePacked(internalID, _receiveSide, _chainID));
 
-            bytes memory out = abi.encodeWithSelector(
-                bytes4(
-                    keccak256(
-                        bytes("unsynthesize(uint256,bytes32,bytes32,address,uint256,(int8,bytes32))")
-                    )
-                ),
+            bytes memory out = abi.encode(
                 _stableBridgingFee,
                 externalID,
                 _crossChainID,
@@ -457,6 +460,7 @@ contract Synthesis is RelayRecipientUpgradeable {
                 _amount,
                 _chain2address
             );
+            out = abi.encodePacked(TON_UNSYNTHESIZE_SELECTOR, out);
 
             requests[externalID] = TxState({
             recipient: _revertableAddress,
@@ -476,7 +480,12 @@ contract Synthesis is RelayRecipientUpgradeable {
                 _chainID
             );
         }
-        emit BurnRequestTON(internalID, _msgSender(), _chainID, _revertableAddress, _chain2address, _amount, _stoken);
+        _emitBurnRequestTON(
+            internalID,
+            _receiveSide,
+            _chainID,
+            _chain2address
+        );
         emit ClientIdLog(internalID, _clientID);
     }
 
@@ -505,7 +514,10 @@ contract Synthesis is RelayRecipientUpgradeable {
             address rtoken = ISyntFabric(fabric).getRealRepresentation(
                 _metaBurnTransaction.sToken
             );
-            require(rtoken != address(0), "Symb: incorrect synt");
+            require(
+                ISyntFabric(fabric).getSyntRepresentation(rtoken, _metaBurnTransaction.chainID) == _metaBurnTransaction.sToken,
+                "Symb: incorrect synt"
+            );
 
             internalID = keccak256(
                 abi.encodePacked(this, requestCount, block.chainid)
@@ -604,6 +616,11 @@ contract Synthesis is RelayRecipientUpgradeable {
             txState.state == RequestState.Sent,
             "Symb: state not open or tx does not exist"
         );
+        address rtoken = ISyntFabric(fabric).getRealRepresentation(txState.stoken);
+        require(
+            ISyntFabric(fabric).getSyntRepresentation(rtoken, _chainID) == txState.stoken,
+            "Symb: incorrect synt"
+        );
         txState.state = RequestState.Reverted;
         // close
         ISyntFabric(fabric).synthesize(
@@ -624,7 +641,6 @@ contract Synthesis is RelayRecipientUpgradeable {
             _revertableAddress = txState.chain2address;
         }
 
-        address rtoken = ISyntFabric(fabric).getRealRepresentation(txState.stoken);
         bytes32 internalID = keccak256(
             abi.encodePacked(this, requestCount, block.chainid)
         );
@@ -698,6 +714,29 @@ contract Synthesis is RelayRecipientUpgradeable {
             txState.recipient,
             txState.amount - _stableBridgingFee,
             _stableBridgingFee,
+            txState.stoken
+        );
+    }
+
+    /// ** INTERNAL functions **
+
+    function _emitBurnRequestTON(
+        bytes32 _internalID,
+        address _receiveSide,
+        uint256 _chainID,
+        TonAddress calldata _chain2address
+    ) internal {
+        bytes32 externalID = keccak256(
+            abi.encodePacked(_internalID, _receiveSide, _chainID)
+        );
+        TxState storage txState = requests[externalID];
+        emit BurnRequestTON(
+            _internalID,
+            _msgSender(),
+            _chainID,
+            txState.recipient,
+            _chain2address,
+            txState.amount,
             txState.stoken
         );
     }

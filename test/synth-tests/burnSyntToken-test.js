@@ -4,16 +4,17 @@ const { ethers } = require("hardhat");
 const library = require("./library");
 
 const hardhatChainID = 31337;
+const otherChainID = 204;
 const stableBridgingFee = 100;
 
-let testToken, portal, bridge, synthesis, sTestToken, owner, user;
+let testToken, portal, bridge, synthesis, syntFabric, sTestToken, owner, user;
 
 describe("Should check burnSyntToken", function () {
 	beforeEach(async () => {
 		[owner, user] = await ethers.getSigners();
 
 		// deploy
-		[, sTestToken, testToken, bridge, portal, synthesis] =
+		[, sTestToken, testToken, bridge, portal, synthesis, syntFabric] =
 			await library.deployContracts();
 
 		//mint tokens
@@ -118,6 +119,267 @@ describe("Should check burnSyntToken", function () {
 					clientId
 				)
 		).to.be.revertedWith("Symb: incorrect synt");
+	});
+
+	it("Should reject a synthetic token registered for another destination chain", async () => {
+		const unsyntAmount = constants.WeiPerEther.mul(5);
+		const balanceBefore = await sTestToken.balanceOf(user.address);
+		const requestCountBefore = await synthesis.requestCount();
+		const clientId = ethers.utils.formatBytes32String("some client id");
+
+		await syntFabric.createRepresentationByAdmin(
+			testToken.address,
+			otherChainID,
+			"sOther",
+			"sOther",
+			18
+		);
+
+		await expect(
+			synthesis
+				.connect(user)
+				.burnSyntheticToken(
+					stableBridgingFee,
+					sTestToken.address,
+					unsyntAmount,
+					user.address,
+					portal.address,
+					bridge.address,
+					user.address,
+					otherChainID,
+					clientId
+				)
+		).to.be.revertedWith("Symb: incorrect synt");
+
+		expect(await sTestToken.balanceOf(user.address)).to.equal(balanceBefore);
+		expect(await synthesis.requestCount()).to.equal(requestCountBefore);
+	});
+
+	it("Should reject a meta burn registered for another destination chain", async () => {
+		const unsyntAmount = constants.WeiPerEther.mul(5);
+		const balanceBefore = await sTestToken.balanceOf(user.address);
+		const requestCountBefore = await synthesis.requestCount();
+		const clientId = ethers.utils.formatBytes32String("some client id");
+
+		await syntFabric.createRepresentationByAdmin(
+			testToken.address,
+			otherChainID,
+			"sOther",
+			"sOther",
+			18
+		);
+
+		await expect(
+			synthesis.connect(user).metaBurnSyntheticToken({
+				stableBridgingFee,
+				amount: unsyntAmount,
+				crossChainID: ethers.constants.HashZero,
+				syntCaller: user.address,
+				finalReceiveSide: ethers.constants.AddressZero,
+				sToken: sTestToken.address,
+				finalCallData: "0x",
+				finalOffset: 0,
+				chain2address: user.address,
+				receiveSide: portal.address,
+				oppositeBridge: bridge.address,
+				revertableAddress: user.address,
+				chainID: otherChainID,
+				clientID: clientId,
+			})
+		).to.be.revertedWith("Symb: incorrect synt");
+
+		expect(await sTestToken.balanceOf(user.address)).to.equal(balanceBefore);
+		expect(await synthesis.requestCount()).to.equal(requestCountBefore);
+	});
+
+	it("Should keep meta burns working for the matching destination chain", async () => {
+		const unsyntAmount = constants.WeiPerEther.mul(5);
+		const balanceBefore = await sTestToken.balanceOf(user.address);
+		const requestCountBefore = await synthesis.requestCount();
+		const clientId = ethers.utils.formatBytes32String("some client id");
+
+		await synthesis.connect(user).metaBurnSyntheticToken({
+			stableBridgingFee,
+			amount: unsyntAmount,
+			crossChainID: ethers.constants.HashZero,
+			syntCaller: user.address,
+			finalReceiveSide: ethers.constants.AddressZero,
+			sToken: sTestToken.address,
+			finalCallData: "0x",
+			finalOffset: 0,
+			chain2address: user.address,
+			receiveSide: portal.address,
+			oppositeBridge: bridge.address,
+			revertableAddress: user.address,
+			chainID: hardhatChainID,
+			clientID: clientId,
+		});
+
+		expect(await sTestToken.balanceOf(user.address)).to.equal(
+			balanceBefore.sub(unsyntAmount)
+		);
+		expect(await synthesis.requestCount()).to.equal(
+			requestCountBefore.add(1)
+		);
+	});
+
+	it("Should reject a TON burn registered for another destination chain", async () => {
+		const unsyntAmount = constants.WeiPerEther.mul(5);
+		const balanceBefore = await sTestToken.balanceOf(user.address);
+		const requestCountBefore = await synthesis.requestCount();
+		const clientId = ethers.utils.formatBytes32String("some client id");
+
+		await syntFabric.createRepresentationByAdmin(
+			testToken.address,
+			otherChainID,
+			"sOther",
+			"sOther",
+			18
+		);
+
+		await expect(
+			synthesis.connect(user).burnSyntheticTokenTON(
+				stableBridgingFee,
+				sTestToken.address,
+				unsyntAmount,
+				ethers.constants.HashZero,
+				{
+					workchain: 0,
+					address_hash: ethers.constants.HashZero,
+				},
+				portal.address,
+				bridge.address,
+				user.address,
+				otherChainID,
+				clientId
+			)
+		).to.be.revertedWith("Symb: incorrect synt");
+
+		expect(await sTestToken.balanceOf(user.address)).to.equal(balanceBefore);
+		expect(await synthesis.requestCount()).to.equal(requestCountBefore);
+	});
+
+	it("Should keep TON burns working for the matching destination chain", async () => {
+		const unsyntAmount = constants.WeiPerEther.mul(5);
+		const balanceBefore = await sTestToken.balanceOf(user.address);
+		const requestCountBefore = await synthesis.requestCount();
+		const clientId = ethers.utils.formatBytes32String("some client id");
+
+		const burnTx = await synthesis.connect(user).burnSyntheticTokenTON(
+			stableBridgingFee,
+			sTestToken.address,
+			unsyntAmount,
+			ethers.constants.HashZero,
+			{
+				workchain: 0,
+				address_hash: ethers.constants.HashZero,
+			},
+			portal.address,
+			bridge.address,
+			user.address,
+			hardhatChainID,
+			clientId
+		);
+		const burnReceipt = await burnTx.wait();
+		const oracleRequest = await library.catchOracleRequest(burnReceipt);
+		const tonPortalInterface = new ethers.utils.Interface([
+			"function unsynthesize(uint256,bytes32,bytes32,address,uint256,(int8,bytes32))",
+		]);
+		const decodedRequest = tonPortalInterface.decodeFunctionData(
+			"unsynthesize",
+			oracleRequest[1]
+		);
+
+		expect(await sTestToken.balanceOf(user.address)).to.equal(
+			balanceBefore.sub(unsyntAmount)
+		);
+		expect(await synthesis.requestCount()).to.equal(
+			requestCountBefore.add(1)
+		);
+		expect(decodedRequest[0]).to.equal(stableBridgingFee);
+		expect(decodedRequest[2]).to.equal(ethers.constants.HashZero);
+		expect(decodedRequest[3]).to.equal(testToken.address);
+		expect(decodedRequest[4]).to.equal(unsyntAmount);
+		expect(decodedRequest[5][0]).to.equal(0);
+		expect(decodedRequest[5][1]).to.equal(ethers.constants.HashZero);
+	});
+
+	it("Should reject rerouting a burn through another asset representation", async () => {
+		const unsyntAmount = constants.WeiPerEther.mul(5);
+		const clientId = ethers.utils.formatBytes32String("some client id");
+
+		await syntFabric.createRepresentationByAdmin(
+			testToken.address,
+			otherChainID,
+			"sOther",
+			"sOther",
+			18
+		);
+
+		const burnTx = await synthesis
+			.connect(user)
+			.burnSyntheticToken(
+				stableBridgingFee,
+				sTestToken.address,
+				unsyntAmount,
+				user.address,
+				portal.address,
+				bridge.address,
+				user.address,
+				hardhatChainID,
+				clientId
+			);
+		const burnReceipt = await burnTx.wait();
+		const oracleRequest = await library.catchOracleRequest(burnReceipt);
+		const portalInterface = new ethers.utils.Interface([
+			"function unsynthesize(uint256,bytes32,bytes32,address,uint256,address)",
+		]);
+		const decodedRequest = portalInterface.decodeFunctionData(
+			"unsynthesize",
+			oracleRequest[1]
+		);
+		const externalID = decodedRequest[1];
+		const requestCountBefore = await synthesis.requestCount();
+
+		const rerouteCallData = synthesis.interface.encodeFunctionData(
+			"revertBurnAndBurn",
+			[
+				stableBridgingFee,
+				externalID,
+				portal.address,
+				bridge.address,
+				otherChainID,
+				user.address,
+			]
+		);
+
+		await expect(
+			bridge.receiveRequestV2(rerouteCallData, synthesis.address)
+		).to.be.revertedWith("Symb: incorrect synt");
+
+		const sourceRequest = await synthesis.requests(externalID);
+		expect(sourceRequest.state).to.equal(1);
+		expect(await synthesis.requestCount()).to.equal(requestCountBefore);
+
+		const validRerouteCallData = synthesis.interface.encodeFunctionData(
+			"revertBurnAndBurn",
+			[
+				stableBridgingFee,
+				externalID,
+				portal.address,
+				bridge.address,
+				hardhatChainID,
+				user.address,
+			]
+		);
+
+		await bridge.receiveRequestV2(validRerouteCallData, synthesis.address);
+
+		const reroutedSourceRequest = await synthesis.requests(externalID);
+		expect(reroutedSourceRequest.state).to.equal(2);
+		expect(await synthesis.requestCount()).to.equal(
+			requestCountBefore.add(1)
+		);
 	});
 
 	it("Should check burnSyntheticToken", async () => {
